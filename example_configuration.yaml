@@ -1,0 +1,48 @@
+#Sensor settings:
+sensor:
+  - platform: mqtt
+    unique_id: balkon_1_temp
+    name: "Temperatur Balkon"
+    state_topic: "/home/balkon/temp/"
+    value_template: "{{ float(value) }}"
+    unit_of_measurement: '°C'
+  - platform: mqtt
+    unique_id: balkon_1_hum
+    name: "Luftfeuchte Balkon"
+    state_topic: "/home/balkon/hum/"
+    value_template: "{{ float(value) }}"
+    unit_of_measurement: '%'
+  - platform: mqtt
+    unique_id: balkon_1_pres
+    name: "Druck Balkon"
+    state_topic: "/home/balkon/pres/"
+    value_template: "{{ float(value) }}"
+    unit_of_measurement: 'bar'
+  - platform: mqtt
+    unique_id: balkon_1_lux
+    name: "Lux Balkon"
+    state_topic: "/home/balkon/lux/"
+    value_template: "{{ float(value) }}"
+    unit_of_measurement: 'lux'
+  - platform: mqtt
+    unique_id: balkon_1_akku
+    name: "Akku Balkon"
+    state_topic: "/home/balkon/akku/"
+    value_template: "{{ ( float(value) * 1290 / 290 / 1000 ) | round(3) }}"
+    unit_of_measurement: '%'
+  - platform: mqtt
+    unique_id: balkon_1_scale1
+    name: "Gewicht Hängekasten rechts"
+    state_topic: "/home/balkon/pflanze1/"
+    value_template: "{{ float(value) }}"
+    unit_of_measurement: 'Kg'
+    
+#MQTT Settings:
+mqtt:
+  broker: 192.168.178.57 
+  port: 1883
+  client_id: home-assistant-1
+  keepalive: 60
+  username: "mo"
+  password: "MokiMaria"
+  protocol: 3.1
