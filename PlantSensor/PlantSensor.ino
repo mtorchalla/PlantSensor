@@ -19,6 +19,19 @@
 
 //#include <Update.h>
 
+// Define Function Prototypes that use User Types below here or use a .h file
+boolean checkAkku(float);
+void start_ota();
+void readAkku(int);
+void readLux();
+void readScale();
+void readBME();
+bool reconnect();
+void debug_menu();
+void calibrate_scales();
+void startBME();
+void loop();
+
 uint16_t start_time = millis();
 uint16_t volatile current_time = millis();
 
@@ -116,18 +129,6 @@ PubSubClient client(espClient);
 
 //#define mqtt_topics_len 6
 //char const* mqtt_topics[mqtt_topics_len] = { "/home/balkon/temp/", "/home/balkon/hum/", "/home/balkon/pres/", "/home/balkon/lux/", "/home/balkon/akku/", "/home/balkon/haengekasten_rechts/" };
-
-// Define Function Prototypes that use User Types below here or use a .h file
-void readAkku(int);
-void readLux();
-void readScale();
-void readBME();
-bool reconnect();
-void loop();
-void debug_menu();
-void start_ota();
-void calibrate_scales();
-void startBME();
 
 
 void setup()

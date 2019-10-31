@@ -1,9 +1,9 @@
 // Settings.h
+#include "Secrets.h"
 
 #ifndef _SETTINGS_h
 #define _SETTINGS_h
 
-#include "Secrets.h"
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
