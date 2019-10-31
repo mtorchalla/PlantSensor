@@ -1,6 +1,7 @@
 //#include <SparkFunLSM9DS1.h>
 //#include <LSM9DS1_Types.h>
 //#include <LSM9DS1_Registers.h>
+//#include "../../../../AppData/Local/arduino15/packages/esp8266/hardware/esp8266/2.5.0/cores/esp8266/Arduino.h"
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 #include <BME280I2C.h>
@@ -14,10 +15,9 @@
 #include <SPI.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
-//#include "../../../../AppData/Local/arduino15/packages/esp8266/hardware/esp8266/2.5.0/cores/esp8266/Arduino.h"
 #include <Arduino.h>
+#include "Version.h"
 
-//#include <Update.h>
 
 // Define Function Prototypes that use User Types below here or use a .h file
 boolean checkAkku(float);
@@ -501,36 +501,32 @@ bool reconnect() {
 }
 
 void checkForUpdates() {
-	String fwURL = String(fw_url);
-	String fwVersionURL = fwURL;
-	fwVersionURL.concat(".version");
+	const String s_fw_url_bin = String(fw_url_bin);
+	const String s_fw_url_ver = String(fw_url_ver);
 
+#ifdef debug
 	Serial.println("Checking for firmware updates.");
-	Serial.print("MAC address: ");
-	Serial.println(mac);
-	Serial.print("Firmware version URL: ");
-	Serial.println(fwVersionURL);
+#endif
 
 	HTTPClient httpClient;
-	httpClient.begin(fwVersionURL);
-	int httpCode = httpClient.GET();
+	httpClient.begin(s_fw_url_ver);
+	const int httpCode = httpClient.GET();
 	if (httpCode == 200) {
-		String newFWVersion = httpClient.getString();
-
+		const String s_new_fw_version = httpClient.getString();
+		const uint32_t i_new_fw_version = s_new_fw_version.substring(s_new_fw_version.length() - 10).toInt();
+		
+#ifdef debug
 		Serial.print("Current firmware version: ");
 		Serial.println(FW_VERSION);
-		Serial.print("Available firmware version: ");
-		Serial.println(newFWVersion);
-
-		int newVersion = newFWVersion.toInt();
-
-		if (newVersion > FW_VERSION) {
-			Serial.println("Preparing to update");
-
-			String fwImageURL = fwURL;
-			fwImageURL.concat(".bin");
-			t_httpUpdate_return ret = ESPhttpUpdate.update(fwImageURL);
-
+		Serial.print("Available firmware version (str): ");
+		Serial.println(s_new_fw_version);
+		Serial.print("Available firmware version (int): ");
+		Serial.println(i_new_fw_version);
+		Serial.println("Preparing to update");
+#endif
+		if (i_new_fw_version > FW_VERSION) {
+			const t_httpUpdate_return ret = ESPhttpUpdate.update(s_fw_url_bin);
+#ifdef debug
 			switch (ret) {
 			case HTTP_UPDATE_FAILED:
 				Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
@@ -539,16 +535,23 @@ void checkForUpdates() {
 			case HTTP_UPDATE_NO_UPDATES:
 				Serial.println("HTTP_UPDATE_NO_UPDATES");
 				break;
+			default:
+				break;
 			}
+#endif
 		}
+#ifdef debug
 		else {
 			Serial.println("Already on latest version");
 		}
+#endif
 	}
+#ifdef debug
 	else {
 		Serial.print("Firmware version check failed, got HTTP response code ");
 		Serial.println(httpCode);
 	}
+#endif
 	httpClient.end();
 }
 
@@ -564,4 +567,4 @@ String macToStr(const uint8_t* mac) {
 		}
 	}
 	return result;
-}*/
+} */

@@ -14,6 +14,8 @@
 //For debug-messages / comment out for power-saving!
 //#define debug
 
+#define FW_VERSION #include "foo.h"
+
 #define UPDATE_INTERVAL_MINUTES 5
 
 //WIFI settings:
@@ -45,6 +47,7 @@
 
 #define UPDATE_INTERVAL 1000000*60*UPDATE_INTERVAL_MINUTES
 
-const char* fw_url = "https://github.com/mtorchalla/PlantSensor/raw/master/PlantSensor/Release/PlantSensor.bin";
+const char* fw_url_bin = "https://github.com/mtorchalla/PlantSensor/raw/master/PlantSensor/Release/PlantSensor.bin";
+const char* fw_url_ver = "https://raw.githubusercontent.com/mtorchalla/PlantSensor/master/PlantSensor/Release/PlantSensor.version";
 
 #endif
