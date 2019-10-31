@@ -45,4 +45,6 @@
 
 #define UPDATE_INTERVAL 1000000*60*UPDATE_INTERVAL_MINUTES
 
+const char* fw_url = "https://github.com/mtorchalla/PlantSensor/raw/master/PlantSensor/Release/PlantSensor.bin";
+
 #endif
