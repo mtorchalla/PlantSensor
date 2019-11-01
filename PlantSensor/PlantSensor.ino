@@ -21,6 +21,7 @@
 
 // Define Function Prototypes that use User Types below here or use a .h file
 boolean checkAkku(float);
+void checkUpdatePress();
 void start_ota();
 void readAkku(int);
 void readLux();
@@ -166,6 +167,8 @@ void setup()
 	readScale();
 	readBME();
 
+	checkUpdatePress();
+
 	volatile bool connected = false;
 	current_time = millis();
 	start_time = millis();
@@ -254,6 +257,23 @@ void loop()
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {}
+
+void checkUpdatePress() {
+	char count = 0;
+	for (int i = 0; i++; i < 3) {
+		if (digitalRead(0) == 0) {
+			pinMode(0, OUTPUT);
+			digitalWrite(0, HIGH);
+			delay(10);
+			pinMode(0, INPUT);
+			count++;
+		}
+		else break;
+	}
+	if (count >= 3) {
+		checkForUpdates();
+	}
+}
 
 boolean checkAkku(float akku_measure)
 {
@@ -368,6 +388,7 @@ void start_ota()
 }
 
 void calibrate_scales() {
+	pinMode(0, INPUT);
 	Serial.println("");
 	Serial.println("Starting calibration.");
 	Serial.println("Available commands:");
@@ -385,22 +406,26 @@ void calibrate_scales() {
 	}
 	const int start_time = millis();
 	bool started = false;
-	while (start_time + 10*1000 < millis() || started) {
+	while (start_time + 10*1000 > millis() || started) {
+		/* if (digitalRead(0) == 0) {
+			started = true;
+			Serial.println("Starting...");
+		} */
 		ArduinoOTA.handle();
 		if (Serial.available()) {
 			String input = Serial.readString();
 			//Serial.print("You typed: " );
 			//Serial.println(input);
 			int index = input.indexOf(" ");
-			if (index <= 0) index = 3;
+			if (index <= 0) index = input.length();
 			String cmd = input.substring(0, index);
 			String params = input.substring(index + 1);
 			int scaleNr = params.substring(0, params.indexOf(" ")).toInt();
 			float cmdValue = params.substring(params.indexOf(" ") + 1).toInt();
-			/*Serial.print("cmd: "); Serial.println(cmd);
+			/* Serial.print("cmd: "); Serial.println(cmd);
 			Serial.print("params: "); Serial.println(params);
 			Serial.print("scaleNr: "); Serial.println(scaleNr);
-			Serial.print("cmdValue: "); Serial.println(cmdValue);*/
+			Serial.print("cmdValue: "); Serial.println(cmdValue); */
 			if (cmd == "get") {
 				started = true;
 				Serial.print("Value from scale "); Serial.print(scaleNr); Serial.print(" : ");
@@ -431,11 +456,11 @@ void calibrate_scales() {
 			}
 			if (cmd == "start") {
 				started = true;
-				Serial.print("Starting.");
-
+				Serial.print("Starting...");
 			}
 		}
 	}
+	Serial.print("Closing...");
 }
 
 ///attempt to connect to the wifi if connection is lost

@@ -12,9 +12,7 @@
 #endif
 
 //For debug-messages / comment out for power-saving!
-//#define debug
-
-#define FW_VERSION #include "foo.h"
+#define debug
 
 #define UPDATE_INTERVAL_MINUTES 5
 
@@ -35,7 +33,7 @@
 #define MQTT_TOPIC_TEMPERATURE	"/home/balkon/temp/"
 #define MQTT_TOPIC_HUMIDITY		"/home/balkon/hum/"
 #define MQTT_TOPIC_PRESSURE		"/home/balkon/pres/"
-#define NrOfScales 2			//Number of used plants (2 per scale sensor!) 
+#define NrOfScales 2			//Number of used Scale Sensors (2 Plants per scale sensor!) 
 #define MQTT_TOPIC_PLANT1		"/home/balkon/pflanze1/" //Scale sensor 1, Pins A+ A-
 #define MQTT_TOPIC_PLANT2		"/home/balkon/pflanze2/" //Scale sensor 1, Pins B+ B-
 #define MQTT_TOPIC_PLANT3		"/home/balkon/pflanze3/" //Scale sensor 2, Pins A+ A-
@@ -47,7 +45,7 @@
 
 #define UPDATE_INTERVAL 1000000*60*UPDATE_INTERVAL_MINUTES
 
-const char* fw_url_bin = "https://github.com/mtorchalla/PlantSensor/raw/master/PlantSensor/Release/PlantSensor.bin";
-const char* fw_url_ver = "https://raw.githubusercontent.com/mtorchalla/PlantSensor/master/PlantSensor/Release/PlantSensor.version";
+const char* fw_url_bin = "https://github.com/mtorchalla/PlantSensor/raw/master/PlantSensor/Release/PlantSensor.ino.bin";
+const char* fw_url_ver = "https://github.com/mtorchalla/PlantSensor/blob/master/PlantSensor/Version.h";
 
 #endif
