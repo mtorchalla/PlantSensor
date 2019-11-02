@@ -136,6 +136,10 @@ PubSubClient client(espClient);
 
 void setup()
 {
+#ifdef debug
+	Serial.println("Firmware Version is: ");
+	Serial.println(FW_VERSION);
+#endif
 	/*WiFi.disconnect();
 	WiFi.mode(WIFI_OFF);
 	WiFi.forceSleepBegin();
