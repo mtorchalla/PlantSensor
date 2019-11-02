@@ -554,7 +554,7 @@ const char* fingerprint = "cc aa 48 48 66 46 0e 91 53 2c 9c 7c 23 2a b1 74 4d 29
 
 const char* host = "raw.githubusercontent.com";
 const char* url = "/mtorchalla/PlantSensor/master/PlantSensor/Release/PlantSensor.ino.bin";
-const char* urlFW = "/mtorchalla/PlantSensor/master/PlantSensor/Version.h";
+const char* urlFW = "/mtorchalla/PlantSensor/master/PlantSensor/FWVersion.h";
 
 void checkForUpdates() {
 #ifdef debug
