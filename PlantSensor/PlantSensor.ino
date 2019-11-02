@@ -600,7 +600,7 @@ void checkForUpdates() {
 
 	if (i_new_fw_version > FW_VERSION) {
 #ifdef debug
-	else Serial.println("Updating Firmware...");
+		Serial.println("Updating Firmware...");
 #endif
 		auto ret = ESPhttpUpdate.update(client2, s_fw_url_bin);
 		// Reboots after update
