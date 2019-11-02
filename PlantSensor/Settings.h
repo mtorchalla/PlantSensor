@@ -45,7 +45,7 @@
 
 #define UPDATE_INTERVAL 1000000*60*UPDATE_INTERVAL_MINUTES
 
-const char* fw_url_bin = "https://github.com/mtorchalla/PlantSensor/raw/master/PlantSensor/Release/PlantSensor.ino.bin";
-const char* fw_url_ver = "https://github.com/mtorchalla/PlantSensor/blob/master/PlantSensor/Version.h";
+const char* fw_url_bin = "https://raw.githubusercontent.com/mtorchalla/PlantSensor/master/PlantSensor/Release/PlantSensor.ino.bin";
+const char* fw_url_ver = "https://raw.githubusercontent.com/mtorchalla/PlantSensor/master/PlantSensor/Version.h";
 
 #endif

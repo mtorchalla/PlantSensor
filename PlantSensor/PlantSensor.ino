@@ -8,6 +8,7 @@
 #include <Wire.h>
 #include "Max44009.h"
 #include <PubSubClient.h>
+#include <WiFiClientSecure.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoOTA.h>
 #include <HX711.h>
@@ -16,11 +17,12 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <Arduino.h>
-#include "Version.h"
+#include "FWVersion.h"
 
 
 // Define Function Prototypes that use User Types below here or use a .h file
 boolean checkAkku(float);
+bool reconnectHandler(char);
 void checkUpdatePress();
 void start_ota();
 void readAkku(int);
@@ -32,7 +34,6 @@ void debug_menu();
 void calibrate_scales();
 void startBME();
 void checkForUpdates();
-void loop();
 
 uint16_t start_time = millis();
 uint16_t volatile current_time = millis();
@@ -169,7 +170,7 @@ void setup()
 
 	checkUpdatePress();
 
-	volatile bool connected = false;
+	/* volatile bool connected = false;
 	current_time = millis();
 	start_time = millis();
 	volatile uint8_t retries = 0;
@@ -183,11 +184,13 @@ void setup()
 		Serial.println(connected);
 #endif
 		retries++;
-	}
+	} */
+
+	bool connected = reconnectHandler(2);
 
 	if (connected) {
-		//Publish all values:
-		//TODO Add Timeout 
+		// Publish all values:
+		// TODO Add Timeout 
 		client.publish(MQTT_TOPIC_AKKU, cakku);
 		client.publish(MQTT_TOPIC_AKKU_LOW, "0");
 		for (int i = 0; i < NrOfScales; i++) {
@@ -239,8 +242,7 @@ void setup()
 }
 
 
-void loop()
-{
+void loop() {
 	ESP.deepSleep(UPDATE_INTERVAL);
 	/*publishBME();
 	publishLux();
@@ -260,12 +262,14 @@ void callback(char* topic, byte* payload, unsigned int length) {}
 
 void checkUpdatePress() {
 	char count = 0;
-	for (int i = 0; i++; i < 3) {
+	for (int i = 0; i < 3; i++) {
 		if (digitalRead(0) == 0) {
 			pinMode(0, OUTPUT);
+			delay(30);
 			digitalWrite(0, HIGH);
-			delay(10);
+			delay(30);
 			pinMode(0, INPUT);
+			delay(30);
 			count++;
 		}
 		else break;
@@ -463,6 +467,27 @@ void calibrate_scales() {
 	Serial.print("Closing...");
 }
 
+bool reconnectHandler(char noOfRetries) {
+	volatile bool connected = false;
+	current_time = millis();
+	start_time = millis();
+	volatile uint8_t retries = 0;
+	while (connected == false && retries <= noOfRetries)
+	{
+		connected = reconnect();
+		delay(500);
+#ifdef debug
+		if (!connected) {
+			Serial.print("Number of retries: ");
+			Serial.println(retries);
+			Serial.println(connected);
+		}
+#endif
+		retries++;
+	}
+	return connected;
+}
+
 ///attempt to connect to the wifi if connection is lost
 bool reconnect() {
 	if (WiFi.status() != WL_CONNECTED) {
@@ -525,14 +550,67 @@ bool reconnect() {
 	}
 }
 
-void checkForUpdates() {
-	const String s_fw_url_bin = String(fw_url_bin);
-	const String s_fw_url_ver = String(fw_url_ver);
+const char* fingerprint = "cc aa 48 48 66 46 0e 91 53 2c 9c 7c 23 2a b1 74 4d 29 9d 33";
 
+const char* host = "raw.githubusercontent.com";
+const char* url = "/mtorchalla/PlantSensor/master/PlantSensor/Release/PlantSensor.ino.bin";
+const char* urlFW = "/mtorchalla/PlantSensor/master/PlantSensor/Version.h";
+
+void checkForUpdates() {
 #ifdef debug
 	Serial.println("Checking for firmware updates.");
 #endif
+	reconnectHandler(5);
+	const String s_fw_url_bin = String(fw_url_bin);
+	const String s_fw_url_ver = String(fw_url_ver);
 
+	configTime(3 * 3600, 0, "pool.ntp.org");
+
+	WiFiClientSecure client2;
+	Serial.print("connecting to ");
+	client2.setFingerprint(fingerprint);
+	if (!client2.connect(host, 443)) {
+		Serial.println("connection failed");
+		return;
+	}
+
+	if (client2.verify(fingerprint, host)) {
+		Serial.println("certificate matches");
+	}
+	else {
+		Serial.println("certificate doesn't match");
+		return;
+	}
+
+	client2.print(String("GET ") + urlFW + " HTTP/1.1\r\n" +
+					"Host: " + host + "\r\n" +
+					"User-Agent: BuildFailureDetectorESP8266\r\n" +
+					"Connection: close\r\n\r\n");
+	while (client2.connected()) {
+		String line = client2.readStringUntil('\n');
+		if (line == "\r") {
+			//Serial.println("headers received");
+			break;
+		}
+	}
+	String line = client2.readStringUntil('\n');
+	const uint32_t i_new_fw_version = line.substring(line.length() - 10).toInt();
+	Serial.println("Recieved:");
+	Serial.println(i_new_fw_version);
+
+	if (i_new_fw_version > FW_VERSION) {
+#ifdef debug
+	else Serial.println("Updating Firmware...");
+#endif
+		auto ret = ESPhttpUpdate.update(client2, s_fw_url_bin);
+		// Reboots after update
+		Serial.println("update failed");
+		Serial.println((int)ret);
+	}
+#ifdef debug
+	else Serial.println("FW Version is up to date!");
+#endif
+	/*
 	HTTPClient httpClient;
 	httpClient.begin(s_fw_url_ver);
 	const int httpCode = httpClient.GET();
@@ -577,7 +655,7 @@ void checkForUpdates() {
 		Serial.println(httpCode);
 	}
 #endif
-	httpClient.end();
+	httpClient.end(); */
 }
 
 /*
