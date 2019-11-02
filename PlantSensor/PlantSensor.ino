@@ -572,7 +572,7 @@ void checkForUpdates() {
 	configTime(3 * 3600, 0, "pool.ntp.org");
 
 	WiFiClientSecure client2;
-	Serial.print("connecting to ");
+	Serial.print("connecting to Git... ");
 	client2.setFingerprint(fingerprint);
 	if (!client2.connect(host, 443)) {
 		Serial.println("connection failed");
@@ -591,6 +591,7 @@ void checkForUpdates() {
 					"Host: " + host + "\r\n" +
 					"User-Agent: BuildFailureDetectorESP8266\r\n" +
 					"Connection: close\r\n\r\n");
+	
 	while (client2.connected()) {
 		String line = client2.readStringUntil('\n');
 		if (line == "\r") {
@@ -599,8 +600,9 @@ void checkForUpdates() {
 		}
 	}
 	String line = client2.readStringUntil('\n');
+	//Serial.println(line);
 	const uint32_t i_new_fw_version = line.substring(line.length() - 10).toInt();
-	Serial.println("Recieved:");
+	Serial.print("FW Version Recieved: ");
 	Serial.println(i_new_fw_version);
 
 	if (i_new_fw_version > FW_VERSION) {
