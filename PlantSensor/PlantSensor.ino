@@ -137,6 +137,7 @@ PubSubClient client(espClient);
 void setup()
 {
 #ifdef debug
+	Serial.println("");
 	Serial.println("Firmware Version is: ");
 	Serial.println(FW_VERSION);
 #endif
