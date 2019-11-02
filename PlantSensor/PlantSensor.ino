@@ -25,6 +25,7 @@ boolean checkAkku(float);
 bool reconnectHandler(char);
 void checkUpdatePress();
 void start_ota();
+void reset_pin0();
 void readAkku(int);
 void readLux();
 void readScale();
@@ -374,6 +375,12 @@ void debug_menu()
 	calibrate_scales();
 }
 
+void reset_pin0() {
+	pinMode(0, OUTPUT);
+	delay(10);
+	digitalWrite(0, HIGH);
+}
+
 void start_ota()
 {
 	ArduinoOTA.onStart([]() {
@@ -617,6 +624,7 @@ void checkForUpdates() {
 #ifdef debug
 	else Serial.println("FW Version is up to date!");
 #endif
+	reset_pin0();
 	/*
 	HTTPClient httpClient;
 	httpClient.begin(s_fw_url_ver);
